@@ -412,7 +412,6 @@ async function loadUserNameFromSupabase() {
 // =====================================
 
 async function saveMazeAchievement(completedLevel) {
-
   const username = currentUsername;
 
   if (!username) {
@@ -429,45 +428,36 @@ async function saveMazeAchievement(completedLevel) {
   };
 
   const badgeId = badgeRewards[completedLevel];
-
-  if (!badgeId) {
-    return;
-  }
+  if (!badgeId) return;
 
   try {
     const response = await fetch(
-      `${SUPABASE_URL}/rest/v1/maze_achievements?on_conflict=username,badge_id`,
+      `${SUPABASE_URL}/rest/v1/maze_achievements?username=eq.${encodeURIComponent(username)}&badge_id=eq.${badgeId}`,
       {
-        method: "POST",
+        method: "PATCH",
         headers: {
           "apikey": SUPABASE_KEY,
           "Authorization": `Bearer ${SUPABASE_KEY}`,
           "Content-Type": "application/json",
-          "Prefer": "resolution=ignore-duplicates"
+          "Prefer": "return=minimal"
         },
         body: JSON.stringify({
-          username: username,
-          badge_id: badgeId
+          unlocked_at: new Date().toISOString()
         })
       }
     );
 
     if (!response.ok) {
-      console.error(
-        "Failed to save achievement:",
-        await response.text()
-      );
+      console.error("Failed to update achievement:", await response.text());
       return;
     }
 
-    console.log("Achievement saved:", badgeId);
+    console.log("Achievement unlocked:", badgeId);
 
   } catch (error) {
     console.error("Achievement error:", error);
   }
 }
-
-
 
 </script></body>
 </html>
