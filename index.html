@@ -286,7 +286,7 @@ function foundLost(){SFX.found();foundChar=true;swapT=.45;score+=25;pops.push({x
 function desired(){if(order.length)return order[0];if(ptr){const px=ox+(cx+.5)*cs,py=oy+(cy+.5)*cs,dx=ptr.x-px,dy=ptr.y-py;if(Math.hypot(dx,dy)>cs*.35)return Math.abs(dx)>=Math.abs(dy)?(dx>0?1:3):(dy>0?2:0)}return -1}
 function trySmash(){if(smash<=0||state!=='play')return;const d=desired();if(d<0)return;const nx=cx+DIRS[d][0],ny=cy+DIRS[d][1];if(nx<0||ny<0||nx>=cols||ny>=rows||!(wl[cy][cx]&DIRS[d][2]))return;
  wl[cy][cx]&=~DIRS[d][2];wl[ny][nx]&=~DIRS[d][3];smash--;render();SFX.smash();spark(ox+(cx+.5+DIRS[d][0]*.5)*cs,oy+(cy+.5+DIRS[d][1]*.5)*cs,16);banner('Smash!',700)}
-function levelDone(){state='won';SFX.win();spark(ox+(cols-.5)*cs,oy+(rows-.5)*cs,36);const b=Math.ceil(left)*2;score+=b;hud();$('lt').textContent='Level '+level+' complete!';$('lb').textContent='Time bonus: +'+b+' points';$('ls').textContent=score;$('lvl').classList.add('on')}
+function levelDone(){state='won';saveMazeAchievement(level);SFX.win();spark(ox+(cols-.5)*cs,oy+(rows-.5)*cs,36);const b=Math.ceil(left)*2;score+=b;hud();$('lt').textContent='Level '+level+' complete!';$('lb').textContent='Time bonus: +'+b+' points';$('ls').textContent=score;$('lvl').classList.add('on')}
 function gameOver(){state='over';SFX.lose();let best=0;try{best=+localStorage.getItem('tk_mbest')||0;if(score>best){best=score;localStorage.setItem('tk_mbest',best)}}catch(e){best=Math.max(best,score)}
  $('fs').textContent=score;$('fm').textContent='You reached level '+level+'. '+(level>=5?'You are a maze master!':level>=3?'Great job finding your way!':'Good try! Play again to go further.');$('best').textContent='Best score: '+best;$('end').classList.add('on')}
 function spark(x,y,n){for(let i=0;i<n;i++){const a=Math.random()*7,s=rnd(cs*1.5,cs*4);fxs.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-cs,t:0,c:['#f6cf7a','#ffffff','#a8d672','#f58fb0'][i%4]})}}
@@ -351,7 +351,7 @@ const SUPABASE_URL = "https://wiwupmwlhvwihfojvvwy.supabase.co";
 const SUPABASE_KEY = "sb_publishable_qfO0B3y1o7Gc3EkHpUa8-Q_mCneQ7_e";
 
 // Global username variable
-let currentUsername = "";
+
 
 
 // =====================================
